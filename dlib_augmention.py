@@ -71,6 +71,33 @@ class Image_argue():
             blur_after = image
             return blur_after
 
+    def move_argue (self,implement,image):
+        if implement == True:
+            offset_x = randrange(min_move_offset_x, max_move_offset_x)
+            offset_y = randrange(min_move_offset_y, max_move_offset_y)
+
+            move_after = imutils.translate(image, offset_x, offset_y)
+
+            a = place[i][1] + offset_x
+            b = place[i][0] + offset_y
+
+
+            place[i][1] = a
+            place[i][0] = b
+
+            place[i][0] = place[i][0]
+            place[i][1] = place[i][1]
+            place[i][2] = place[i][2]
+            place[i][3] = place[i][3]
+            return move_after
+
+        elif implement == False:
+            move_after = image
+            return move_after
+
+
+
+
 
 
     def rotate_argue(self,implement,image):
@@ -118,11 +145,18 @@ if __name__ == '__main__':
 
     max_blur_size = 15
     min_blur_size = 1
+    # ================================================================
     max_rotation_angle = 10
     min_rotation_angle = -10
+    # ================================================================
+    max_move_offset_x = 50
+    min_move_offset_x = -50
+    max_move_offset_y = 50
+    min_move_offset_y = -50
+    # ================================================================
 
     blur_sw = True
-    rotate_sw = True
+    rotate_sw,move_sw = True,True
 
 
     title, place = img_arg.train_parameters(file)
@@ -134,7 +168,8 @@ if __name__ == '__main__':
 
 
         rotate_after = img_arg.rotate_argue(rotate_sw, img)
-        blur_after = img_arg.blur_argue(blur_sw,rotate_after)
+        move_after = img_arg.move_argue(move_sw, rotate_after)
+        blur_after = img_arg.blur_argue(blur_sw,move_after)
 
         cv2.rectangle(blur_after, (place[i][1], place[i][0]), (place[i][2]+place[i][1], place[i][0]+place[i][3]), (0, 255, 0), 4, cv2.LINE_AA)
 
