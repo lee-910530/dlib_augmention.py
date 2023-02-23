@@ -79,7 +79,7 @@ class Image_argue():
             print(height, width)
 
             angle = randrange(min_rotation_angle, max_rotation_angle)
-            self.img_rotated = imutils.rotate(image, angle)
+            rotated_after = imutils.rotate(image, angle)
 
             origin = (width / 2, height / 2)
 
@@ -92,8 +92,11 @@ class Image_argue():
             place[i][0] = int(b - place[i][3]/2)
             place[i][2] = int(place[i][2])
             place[i][3] = int(place[i][3])
+            return rotated_after
+
         elif implement == False :
-            pass
+            rotate_after =image
+            return rotate_after
 
 
 
@@ -113,13 +116,13 @@ if __name__ == '__main__':
     continue_cnt = 1
     name = "butterfly\\image_" + str(image_cnt).rjust(4,"0") + ".png"
 
-    max_blur_size = 19
-    min_blur_size = 17
-    max_rotation_angle = 0
-    min_rotation_angle = 0
+    max_blur_size = 15
+    min_blur_size = 1
+    max_rotation_angle = 10
+    min_rotation_angle = -10
 
     blur_sw = True
-    rotate_sw = False
+    rotate_sw = True
 
 
     title, place = img_arg.train_parameters(file)
@@ -130,10 +133,10 @@ if __name__ == '__main__':
         img = cv2.imread(title[0][0] + "/" + "image_" + str(i+1).rjust(4,"0") + ".jpg")
 
 
-        # img_arg.rotate_argue(rotate_sw, img)
-        blur_after = img_arg.blur_argue(blur_sw,img)
+        rotate_after = img_arg.rotate_argue(rotate_sw, img)
+        blur_after = img_arg.blur_argue(blur_sw,rotate_after)
 
-        
+        cv2.rectangle(blur_after, (place[i][1], place[i][0]), (place[i][2]+place[i][1], place[i][0]+place[i][3]), (0, 255, 0), 4, cv2.LINE_AA)
 
 
 
