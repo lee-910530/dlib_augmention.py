@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<?xml-stylesheet type='text/xsl' href='image_metadata_stylesheet.xsl'?>
+<dataset>
+<name>imglab dataset</name>
+<comment>Created by imglab tool.</comment>
+<images>
+  <image file='butterfly\image_0001.jpg' width='300' height='198'>
+    <box top='4' left='3' width='277' height='188'/>
+  </image>
+  <image file='butterfly\image_0002.jpg' width='221' height='300'>
+    <box top='64' left='1' width='215' height='145'/>
+  </image>
+  <image file='butterfly\image_0003.jpg' width='300' height='192'>
+    <box top='4' left='38' width='240' height='184'/>
+  </image>
+  <image file='butterfly\image_0004.jpg' width='300' height='271'>
+    <box top='11' left='4' width='284' height='218'/>
+  </image>
+  <image file='butterfly\image_0005.jpg' width='300' height='278'>
+    <box top='34' left='44' width='247' height='171'/>
+
+</images>
+</dataset>
