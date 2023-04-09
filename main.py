@@ -1,3 +1,6 @@
+import math
+import pytesseract
+from PIL import Image
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
@@ -253,6 +256,30 @@ def z():
    # video.release()
    cv2.destroyAllWindows()
 
+def find_Contour_extremely():
+   img = cv2.imread("4.jpg")
+
+   gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+   ret, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+
+   contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+   pentagram = contours[1]  # 第二条轮廓是五角星
+
+   leftmost = tuple(pentagram[:, 0][pentagram[:, :, 0].argmin()])
+   rightmost = tuple(pentagram[:, 0][pentagram[:, :, 0].argmax()])
+   upmost = tuple(pentagram[:, 0][pentagram[:, :, 1].argmin()])
+   downmost = tuple(pentagram[:, 0][pentagram[:, :, 1].argmax()])
+
+   cv2.circle(img, leftmost, 2, (0, 255, 0), 3)  # 綠
+   cv2.circle(img, rightmost, 2, (0, 0, 255), 3)  # 紅
+   cv2.circle(img, upmost, 2, (255, 0, 0), 3)  # 藍
+   cv2.circle(img, downmost, 2, (0, 255, 255), 3)  # 黃
+
+   cv2.imshow("img", img)
+   cv2.waitKey(0)
+   cv2.destroyAllWindows()
+
 def test():
    while 1 :
       print(pag.position())
@@ -284,7 +311,82 @@ def test():
       if cv2.waitKey(1) & 0xFF == ord('0'):
          break
 
-   cv2.destroyAllWindows()
-if __name__ == '__main__':
-   pass
+def translate(image):
+   height, width = image.shape[:2]  # 取得影像長、寬
+   M = np.float32([[1, math.tan(0.05), 0], [0, 1, 0]])  # 定義轉換矩陣 M
+   shifted = cv2.warpAffine(image, M, (width, height))  # 實現仿射轉換
+   return shifted  # 回傳轉換結果
 
+def sift_detect():
+   MIN_MATCH_COUNT = 10
+
+   img1 = cv2.imread('gogogo_qu.jpg', 0)  # queryImage
+   img2 = cv2.imread('1.webp', 0)  # trainImage
+
+   # Initiate SIFT detector
+   sift = cv2.SIFT_create()
+
+   # find the keypoints and descriptors with SIFT
+   kp1, des1 = sift.detectAndCompute(img1, None)
+   kp2, des2 = sift.detectAndCompute(img2, None)
+
+   FLANN_INDEX_KDTREE = 0
+   index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+   search_params = dict(checks=50)
+
+   flann = cv2.FlannBasedMatcher(index_params, search_params)
+
+   matches = flann.knnMatch(des1, des2, k=2)
+
+   # store all the good matches as per Lowe's ratio test.
+   good = []
+   for m, n in matches:
+      if m.distance < 0.7 * n.distance:
+         good.append(m)
+
+   if len(good) > MIN_MATCH_COUNT:
+      src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+      dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+
+      M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+      matchesMask = mask.ravel().tolist()
+
+      h, w = img1.shape
+      pts = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(-1, 1, 2)
+      dst = cv2.perspectiveTransform(pts, M)
+
+      img2 = cv2.polylines(img2, [np.int32(dst)], True, 255, 3, cv2.LINE_AA)
+
+   else:
+      print("Not enough matches are found - %d/%d" % (len(good), MIN_MATCH_COUNT))
+      matchesMask = None
+
+   draw_params = dict(matchColor=(0, 255, 0),  # draw matches in green color
+                        singlePointColor=None,
+                        matchesMask=matchesMask,  # draw only inliers
+                        flags=2)
+
+   img3 = cv2.drawMatches(img1, kp1, img2, kp2, good, None, **draw_params)
+
+   plt.imshow(img3, 'gray'), plt.show()
+   cv2.imshow('drawMatches', img3)
+   cv2.waitKey(0)
+   cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+   import cv2
+
+   # 開啟影片檔案
+   cap = cv2.VideoCapture(0)
+
+   # 以迴圈從影片檔案讀取影格，並顯示出來
+   while (True):
+      ret, frame = cap.read()
+
+      cv2.imshow('frame', frame)
+
+      if cv2.waitKey(1) & 0xFF == ord('q'):
+         break
+
+   cap.release()
+   cv2.destroyAllWindows()

@@ -315,7 +315,7 @@ img_arg = Image_argue()
 
 if __name__ == '__main__':
     file = "1.xml"
-    image_cnt = 5
+    image_cnt = 6
     continue_cnt = 1
     name = "butterfly\\image_" + str(image_cnt).rjust(4,"0") + ".jpg"
 
@@ -341,17 +341,17 @@ if __name__ == '__main__':
     min_intensity = 0.5
     max_intensity = 2
     # ================================================================
-    gaussian_noise_range = 0.02  # 0~1
+    gaussian_noise_range = 0.1    # 0~1
     # ================================================================
     min_contrast = -100
     max_contrast = 100  # 255 ~ -255
 
-    blur_sw = False
-    rotate_sw,move_sw = False,False
-    lightness_saturation_sw = False
-    intensity_sw = False
-    gaussian_noise_sw = False
-    contrast_and_brightness_sw = False
+    blur_sw = True
+    rotate_sw,move_sw = True,True
+    lightness_saturation_sw = True
+    intensity_sw = True
+    gaussian_noise_sw = True
+    contrast_and_brightness_sw = True
 
 
 
@@ -361,8 +361,8 @@ if __name__ == '__main__':
 
     for i in range(len(title)):
 
-        img = cv2.imread(title[0][0] + "/" + "image_" + str(i+1).rjust(4,"0") + ".jpg")
-
+        # img = cv2.imread(title[0][0] + "/" + "image_" + str(i+1).rjust(4,"0") + ".jpg")
+        img = cv2.imread("22.png")
 
         img_temp = img_arg.rotate_argue(rotate_sw, img)
         img = img_arg.move_argue(move_sw, img_temp)

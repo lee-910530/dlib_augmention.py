@@ -18,6 +18,5 @@
   </image>
   <image file='butterfly\image_0005.jpg' width='300' height='278'>
     <box top='34' left='44' width='247' height='171'/>
-
-</images>
+  </images>
 </dataset>
